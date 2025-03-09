@@ -1,4 +1,55 @@
 import docx
+import re
+
+def clean_ppi_information(text):
+    """Replace sensitive PPI information in all word forms (case-insensitive, keeps original casing)."""
+    replacements = {
+        "yardi": "work",
+        "ammy": "leia",
+        "ariana": "ramona",
+        "fuck": "duck",
+        "sex": "dance",
+        "octavu": "bosman",
+        "masturbate": "m*",
+        "masturbating": "m*",
+        "pelicanu": "jon",
+        "alex": "jon"
+    }
+
+    # Extend replacements to handle different word variations
+    word_variants = {}
+    for word, replacement in replacements.items():
+        # Standard word replacement
+        word_variants[word] = replacement
+        word_variants[word + "s"] = replacement + "s"
+        word_variants[word + "ed"] = replacement + "ed"
+        word_variants[word + "ing"] = replacement + "ing"
+        word_variants[word + "i"] = replacement + "i"
+
+    # Special cases: Replace "sex" but NOT words like "sexual" - this is because the "Sexual Energy",
+    # chakra, etc are a big part of these writings and replacing would pollute the teachings
+    word_variants.pop("sex", None)  # Remove default plural extensions for "sex"
+    word_variants["sex"] = "dance"  # Ensure "sex" is replaced
+
+    # Ensure all keys in dictionary are lowercase for case-insensitive matching
+    word_variants = {k.lower(): v for k, v in word_variants.items()}
+
+    # Use regex to match and replace words inside text (but only standalone "sex", not "sexual")
+    def replace_match(match):
+        original_word = match.group(0)
+        replacement_word = word_variants.get(original_word.lower(), original_word)  # Safe lookup
+
+        # Preserve original case
+        if original_word.isupper():
+            return replacement_word.upper()
+        elif original_word[0].isupper():
+            return replacement_word.capitalize()
+        else:
+            return replacement_word.lower()
+
+    # Regex pattern to match full words but exclude words like "sexual"
+    pattern = re.compile(r'\b(' + '|'.join(re.escape(word) for word in word_variants.keys()) + r')\b', re.IGNORECASE)
+    return pattern.sub(replace_match, text)
 
 
 def clean_diary(input_path, output_path):
@@ -57,6 +108,9 @@ def clean_diary(input_path, output_path):
 
     # Join all entries with a newline separator (indicating a new entry)
     full_text = '\n\n'.join(entries)
+
+    # Apply PPI cleaning
+    full_text = clean_ppi_information(full_text)
 
     # Save the cleaned text to a .txt file
     with open(output_path, 'w', encoding='utf-8') as file:
