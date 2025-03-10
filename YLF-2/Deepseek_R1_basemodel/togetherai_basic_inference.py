@@ -8,6 +8,7 @@ load_dotenv()
 # Initialize client with API key from environment
 client = Together(api_key=os.getenv("TOGETHER_API_KEY"))
 
+
 def test_base_model(prompt: str):
     response = client.chat.completions.create(
         model="deepseek-ai/DeepSeek-R1",
@@ -16,6 +17,7 @@ def test_base_model(prompt: str):
         temperature=0.7
     )
     return response.choices[0].message.content
+
 
 if __name__ == "__main__":
     test_prompt = "Write a short poem about AI in healthcare:"
