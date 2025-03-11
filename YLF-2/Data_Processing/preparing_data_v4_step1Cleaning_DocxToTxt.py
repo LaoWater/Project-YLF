@@ -124,7 +124,7 @@ def clean_diary(input_path, output_path):
 #####################################
 
 print("Cleaning Docx and transcribing to txt...")
-clean_diary(r'Data\Lao_All Writings 1-Dec.docx', r'Data\v4_step1_cleaned_diary.txt')
+clean_diary(r'Data\Lao_All Writings.docx', r'Data\v4_step1_cleaned_diary.txt')
 
 
 # docx_to_json(r'Data\Extra Organic Dataset\Discord Conversation until 26 Dec 2024.docx.docx', r'Data\Extra Organic Dataset\formatted_discord_conversations.json')
