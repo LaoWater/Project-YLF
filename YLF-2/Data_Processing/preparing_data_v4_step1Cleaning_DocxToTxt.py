@@ -13,7 +13,9 @@ def clean_ppi_information(text):
         "masturbate": "m*",
         "masturbating": "m*",
         "pelicanu": "jon",
-        "alex": "jon"
+        "alex": "jon",
+        "tommy": "tomtom",
+        "lavinia": "country girl"
     }
 
     # Extend replacements to handle different word variations
