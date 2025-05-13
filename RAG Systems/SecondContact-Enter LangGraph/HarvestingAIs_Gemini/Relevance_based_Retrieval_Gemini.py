@@ -30,7 +30,7 @@ if not GEMINI_API_KEY_VALUE:
 
 # Model for the main conversational agent
 # Using Gemini models now. Fine-tuned models are not assumed for Gemini here.
-MAIN_LLM_MODEL = "gemini-1.5-pro-latest"  # Changed model
+MAIN_LLM_MODEL = "gemini-2.0-flash"  # Changed model
 # Model for the pondering agent
 PONDER_LLM_MODEL = "gemini-1.5-flash-latest"  # Changed model
 
