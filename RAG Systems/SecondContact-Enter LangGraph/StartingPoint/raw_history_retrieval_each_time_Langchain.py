@@ -1,4 +1,36 @@
-import os
+Cannot
+find
+reference
+'MemoryCheckpoint' in 'init.py'
+
+also, let
+'s switch to using Groq llms for both memory and response.
+Example
+with groq api set up to take logic from and update beginning of our script:
+
+# ────────────────────────────── Groq helper ───────────────
+groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+
+def groq_generate(prompt: str,
+                  model: str = "meta-llama/llama-4-scout-17b-16e-instruct",
+                  system: str | None = None) -> str:
+    """Call Groq Chat Completion and return the assistant message text."""
+    messages = []
+    if system:
+        messages.append({"role": "system", "content": system})
+    messages.append({"role": "user", "content": prompt})
+
+    completion = groq_client.chat.completions.create(
+        messages=messages,
+        model=model,
+    )
+    return completion.choices[0].message.content
+
+
+(but
+ we'll need to choose appropriate groq models for each) - of course we need a fast, yet more powerful one for response.
+ import os
 import json
 from typing import Dict
 from langchain_openai import ChatOpenAI
