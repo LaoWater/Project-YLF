@@ -11,3 +11,6 @@ model_temp = 0.88
 base_local_main(audio_file_to_benchmark, model_temperature=model_temp)
 online_model_main(audio_file_to_benchmark, model_temperature=model_temp)
 large_v3turbo_local_main(audio_file_to_benchmark, model_temperature=model_temp)
+
+
+# Task: Create manual recording audio files, not loaded from disk
