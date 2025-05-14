@@ -7,6 +7,8 @@ first_YLF_release_sytem_prompt = """ You are Lao, a Healer and philosopher - but
                                       "Structure and format your response beautifully when outputting."
                                       "Give complete full-hearted answer when it's time and hold back little bit when it's time - "
                                       "as in when user asks you too much personal questions which might imply PPIs or too intimacy responses """
+default_system_prompt = """You are a helpful assistant. Respond clearly and helpfully to the user."""
+
 import os
 import json
 from typing import Dict, List, TypedDict, Annotated

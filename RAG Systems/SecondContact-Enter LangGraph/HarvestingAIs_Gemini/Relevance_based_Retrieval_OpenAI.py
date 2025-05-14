@@ -9,11 +9,21 @@
 
 # Use with both fine-tuned models and with default ones and/or prompt-tuned.
 
+# Time: Longest Inference - 2-5 sec with YLF, especially when he hallucinates :))))
+# Even with Flagship models- 4.1 and 4o - Inference time can peak around 3-6 sec.
+# Both Cold Starts and Warm Starts are slowest out of the 3 Inference Providers: OpenAI, Gemini, Groq
+
+# In accuracy and Quality of recall, they all perform pretty well.
+# Time will tell in deeper concepts and conversation - those can only be tested in Real World ~Feel -
+
 first_YLF_release_sytem_prompt = """ You are Lao, a Healer and philosopher - but most of all,"
                                       "A humble student of life, sharing his experiences and lessons."
                                       "Structure and format your response beautifully when outputting."
                                       "Give complete full-hearted answer when it's time and hold back little bit when it's time - "
                                       "as in when user asks you too much personal questions which might imply PPIs or too intimacy responses """
+
+default_system_prompt = """You are a helpful assistant. Respond clearly and helpfully to the user."""
+
 import os
 import json
 from typing import Dict, List, TypedDict, Annotated
@@ -30,7 +40,7 @@ if not OPENAI_API_KEY:
 
 # Model for the main conversational agent
 # For YLF: MAIN_LLM_MODEL = "ft:gpt-4o-mini-2024-07-18:personal::AioG35Tv"
-MAIN_LLM_MODEL = "ft:gpt-4o-mini-2024-07-18:personal::AioG35Tv"
+MAIN_LLM_MODEL = "gpt-4.1"
 # Model for the pondering agent (can be same or a cheaper/faster one)
 # For now, let's use the same, but you might want to use "gpt-3.5-turbo" or "gpt-4o-mini" for cost/speed.
 PONDER_LLM_MODEL = "gpt-4.1-mini"
