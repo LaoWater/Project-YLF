@@ -8,3 +8,5 @@ YLF-2/.env
 YLF-2/Data_Processing/Data
 .aider*
 Research & Studies/Ava - RAG, LangGraph, LangChain
+RAG Systems/ragvenv
+RAG Systems/.env
