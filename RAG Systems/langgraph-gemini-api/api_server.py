@@ -1,3 +1,7 @@
+# Start with: uvicorn api_server:api --reload
+# In ragvenv environment to host API server from local network.
+
+
 import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
