@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "creators-multi-verse",
+  "private_key_id": "f0dd178813902828969233b17f8d5f9b1ab989e9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCdzS8XUjioIENC\nfF9jKVrDRaYn7Ym+WR7uSFlbgfUvutk/kHx+4sODBZqm7ITOZwGuJM45T3b/gBNd\nFQkT3W1HbURxhhw39FONzFK2sIRg9txoM+6tou6hqSDBGKx63UA7sSOaK7aEsbdH\nCCRcIdVaMY/rBZ5/Cphp9sFB73ZJzTcfvQmXQRt1dSaiUxm7p1z1aS1F6UEYPwQg\nDEWjSUafF1Z14SNWaA6kOc+AqP/2ifkXBR5tde87tpuiP0HVY2y/Yy0VK443TOOH\nmWXF3VbjfcXh/v6RLIvRQuE7ZoQBXXzt5ygRsDdb4OLl3fke35RFr6Du3Eatb7xB\nKA0kv3a1AgMBAAECggEAG7bLjHb+SFjSNz0Mq6e5rw3ubpjDVlDko8jFGNMsMqPI\nP+eqVcaRu9MiJCrp8C4bF3CTX3FbXugpfnGRVJHQ/XhtStrY3eLlQcQeysMZnMX+\nU7a7NnelHXNMs10X/cQZ4eHsdMk0lv13SNxfNmcix2Jo+kfUXE+KESIrMt9RkQhY\nwj5eklCFZG70LnTaoRe5hw7G0Wuvrz3ni8z9VC4678H1Q9l6dKS5SRUOaAaRlAEt\nDu12EuLxPVttIn6C7mox2eE59+FzbUoWnB1yyXlBRv6Q/QRn5NuI+8+psroArPZE\nlI1vgJdVDQef/xlh32uILDrs6D02ZdIOzlX1npEVQQKBgQDbzYzpVXv+FR4z8vpz\nTz/Wsh+F+aZDy/FNYbyHi3RwLfr+jhiHD8pRBNmyhWc7wbWqbA5GurYEK6BsED9R\nq8gJumIahmYRsaL/UOR6UzSuzd5oSGlo27Kin78hMdGDDhVvSV+SGk+pCZ2y4spV\nzRVeyNMf3FW5MQJB3N09XdyQ6QKBgQC3yccguyPTYTi69fZc5OawDzxbGBJjrWtS\ncM9iQQhS/qLK/MNay0hsfWH+LNV1gMokOotCoLYhDwEXBHZox6y6sanYNz3fev+c\n0FmTcJyVwHxE1QbzrGoUFvGiW8sbwIy+zOt+WGBMCJVekdYvbFwIkK0mH4MRn0rP\n1cBhoAl37QKBgCQlDAv+w7IHlPzj8u1tVckfZ3GnmQDDE74u2UrM0uvzk7eydDQZ\nk6J5Erd5mn1IIHCS7lIROAc9iVbb4R20CuQWozVLbpNwS6aCjd/TuPEZ533sknDs\n19ZIQKzbvWE4uqufPDkRXJImg6k8BBvR6ra4fYdauzoF5iIgiL0jpzapAoGBAJy0\nL9PpnH9T6vIGW/wSs9sz8mtdV/ijWdmeFEUbXASf1qAq6kqU/3h5Y7877PlWSYSg\nYjL6IrCHQY+ln2xxrAY3C7EuUNQm5KGJSIcdQnWw/IQX+uhzfrMIaRjdGY3dHGRn\nBvfgVKMfwnQy9qPSyZoH+YqC3dd9sWUKRRE4Sjp1AoGAJSy3IYvTw64AG3nJ/AAg\nQNxmiYLrlcM5ebSgftUbwHBvtD62Qq0y4FusP+MpjGEV0oyExzjbAaCGW64m3L5E\ncvJetT/C3DNpdhJmX0mA2EDpusgayA5yi1UC/COO24VLLmGlHTZDcxWGIIrIGK2N\ndAfWH6eP+8BBHVgyY+/Nzaw=\n-----END PRIVATE KEY-----\n",
+  "client_email": "creatorsmultiv-service@creators-multi-verse.iam.gserviceaccount.com",
+  "client_id": "109393842512116490379",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/creatorsmultiv-service%40creators-multi-verse.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
