@@ -7,13 +7,15 @@ from datetime import datetime, timezone
 from google.cloud import storage
 from google.cloud.exceptions import GoogleCloudError
 import mimetypes
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 load_dotenv()  # Load environment variables from .env file
 
+config = dotenv_values(".env")
+
 # Configuration from environment variables
-GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
-GCS_PROJECT_ID = os.getenv("GCS_PROJECT_ID")
-GCS_SERVICE_ACCOUNT_KEY_PATH = os.getenv("GCS_SERVICE_ACCOUNT_KEY_PATH")
+GCS_BUCKET_NAME = config.get("GCS_BUCKET_NAME")
+GCS_PROJECT_ID = config.get("GCS_PROJECT_ID")
+GCS_SERVICE_ACCOUNT_KEY_PATH = config.get("GCS_SERVICE_ACCOUNT_KEY_PATH")
 
 
 class CloudStorageService:
@@ -38,6 +40,7 @@ class CloudStorageService:
                     self._client = storage.Client(project=self.project_id)
             except Exception as e:
                 raise Exception(f"Failed to initialize GCS client: {e}")
+        print("Initializing GCS client with Service Account: " + GCS_SERVICE_ACCOUNT_KEY_PATH)
         return self._client
 
     def _get_bucket(self) -> storage.Bucket:

@@ -1,199 +1,178 @@
+# visual_model.py
+
 import os
-import time
-import base64
-import asyncio
-from openai import OpenAI
+from pathlib import Path
+from io import BytesIO
+import logging
 
-# Initialize OpenAI client
-client = OpenAI()
+# --- Google Imagen Imports ---
+from google import genai
+from google.genai import types
+from PIL import Image
+from dotenv import dotenv_values
+
+# --- Setup Logging ---
+logger = logging.getLogger(__name__)
 
 
-def generate_and_save_image(image_prompt: str, output_directory: str, filename_base: str,
-                            extension: str = "png", model: str = "gpt-image-1") -> str:
+# --- Google Imagen Configuration ---
+_google_genai_client = None
+_gemini_api_key_loaded = False
+
+
+def _load_gemini_api_key():
+    """Loads GEMINI_API_KEY from .env or environment variables."""
+    print("Calling Load gemini key")
+    # Load .env file as a dictionary (without affecting os.environ)
+    config = dotenv_values(".env")
+
+    # Access the key directly from the config dictionary
+    GEMINI_API_KEY_VALUE = config.get("GEMINI_API_KEY")
+
+    if not GEMINI_API_KEY_VALUE:
+        raise ValueError("GEMINI_API_KEY is not set or not found in .env file.")
+    print(GEMINI_API_KEY_VALUE)
+    return GEMINI_API_KEY_VALUE
+
+
+def get_google_genai_client():
+    """Initializes and returns the Google GenAI client."""
+    global _google_genai_client
+    api_key = _load_gemini_api_key()
+
+    if not api_key:
+        raise ValueError(
+            "GEMINI_API_KEY not found in environment variables or .env file. "
+            "Please set it to use Google Imagen."
+        )
+    if _google_genai_client is None:
+        try:
+            print("Init Google GenAi")
+            # Explicitly pass the API key to ensure it uses the one from .env
+            _google_genai_client = genai.Client(api_key=api_key)
+            logger.info("Google GenAI Client initialized successfully.")
+        except Exception as e:
+            logger.error(f"Failed to initialize Google GenAI Client: {e}")
+            raise
+    return _google_genai_client
+
+
+def generate_and_save_image_google(
+        prompt: str,
+        output_directory: str,
+        filename_base: str,
+        file_extension: str = "png",
+        model_name: str = "imagen-3.0-generate-002",  # Default Google Imagen model
+) -> str:
     """
-    Generates an image using OpenAI's image generation model and saves it locally.
+    Generates an image using a specified Google Imagen model and saves it.
     This function is synchronous and should be called via asyncio.to_thread() for async contexts.
 
     Args:
-        image_prompt: The text prompt to generate the image from
-        output_directory: Directory where the image will be saved
-        filename_base: Base name for the file (without extension)
-        extension: File extension (default: png for OpenAI images)
-        model: OpenAI model to use (default: gpt-image-1)
+        prompt: Text prompt for image generation.
+        output_directory: Directory where the generated asset should be saved.
+        filename_base: Base filename (without extension) for the generated asset.
+        file_extension: File extension for the generated image (e.g., "png", "jpg").
+        model_name: The specific Google Imagen model to use.
 
     Returns:
-        str: Full path to the saved image file
+        The file path where the image was saved.
 
     Raises:
-        Exception: If image generation or saving fails
+        ValueError: If GEMINI_API_KEY is not set.
+        Exception: If image generation or saving fails.
     """
-    print(f"\n🎨 Visual Model: Received prompt: '{image_prompt[:100]}...'")
-    print(f"🎨 Visual Model: Generating image using {model} for {filename_base}.{extension} in {output_directory}...")
+    try:
+        client = get_google_genai_client()  # Ensures client is initialized and API key is present
+    except ValueError as ve:  # Catch API key error specifically
+        logger.error(f"Configuration error for Google Imagen: {ve}")
+        raise  # Re-raise to be handled by the caller
 
-    # Ensure output directory exists
-    if not os.path.exists(output_directory):
-        os.makedirs(output_directory, exist_ok=True)
+    logger.info(
+        f"🎨 [Google Imagen] Requesting image generation with model '{model_name}' for prompt: '{prompt[:100]}...'")
 
     try:
-        # Generate image using OpenAI
-        print(f"🎨 Calling OpenAI image generation API...")
-
-        model_params = {
-            "model": model,
-            "prompt": image_prompt,
-        }
-
-        response = client.images.generate(**model_params)
-
-        # Process the first (and typically only) image from response
-        if not response.data:
-            raise Exception("No image data received from OpenAI API")
-
-        image_data = response.data[0]
-
-        if not image_data.b64_json:
-            raise Exception("No base64 image data in API response")
-
-        # Decode base64 image data
-        image_bytes = base64.b64decode(image_data.b64_json)
-
-        # Create timestamped filename to avoid conflicts
-        timestamp = int(time.time())
-        final_filename = f"{filename_base}_{timestamp}.{extension}"
-        file_path = os.path.join(output_directory, final_filename)
-
-        # Save image to file
-        with open(file_path, "wb") as f:
-            f.write(image_bytes)
-
-        print(f"🎨 Visual Model: Successfully saved image to {file_path}")
-        print(f"🎨 Image size: {len(image_bytes)} bytes")
-
-        return file_path
-
-    except Exception as e:
-        error_msg = f"Visual Model: Error generating or saving image: {e}"
-        print(f"🚨 {error_msg}")
-        raise Exception(error_msg)
-
-
-# Alternative async wrapper function (if you prefer to handle async at this level)
-async def generate_and_save_image_async(image_prompt: str, output_directory: str, filename_base: str,
-                                        extension: str = "png", model: str = "gpt-image-1") -> str:
-    """
-    Async wrapper for generate_and_save_image.
-    Runs the synchronous OpenAI call in a thread to avoid blocking the event loop.
-
-    Args:
-        Same as generate_and_save_image
-
-    Returns:
-        str: Full path to the saved image file
-    """
-    print(f"🎨 Visual Model: Running image generation in thread to avoid blocking...")
-
-    # Run the synchronous function in a thread
-    return await asyncio.to_thread(
-        generate_and_save_image,
-        image_prompt,
-        output_directory,
-        filename_base,
-        extension,
-        model
-    )
-
-
-# Utility function for batch generation (if needed)
-def generate_multiple_images(prompts: list[str], output_directory: str,
-                             filename_prefix: str = "generated_img",
-                             extension: str = "png", model: str = "gpt-image-1") -> list[str]:
-    """
-    Generate multiple images from a list of prompts.
-    This is a synchronous function - use asyncio.to_thread() if calling from async context.
-
-    Args:
-        prompts: List of text prompts
-        output_directory: Directory where images will be saved
-        filename_prefix: Prefix for generated filenames
-        extension: File extension
-        model: OpenAI model to use
-
-    Returns:
-        list[str]: List of file paths for successfully generated images
-    """
-    saved_files = []
-
-    for i, prompt in enumerate(prompts):
-        try:
-            filename_base = f"{filename_prefix}_{i + 1}"
-            file_path = generate_and_save_image(
-                prompt, output_directory, filename_base, extension, model
+        response = client.models.generate_images(
+            model=model_name,
+            prompt=prompt,
+            config=types.GenerateImagesConfig(
+                number_of_images=1  # Generating one image per call
             )
-            saved_files.append(file_path)
-        except Exception as e:
-            print(f"🚨 Failed to generate image {i + 1}/{len(prompts)}: {e}")
-            # Continue with next image instead of stopping
-            continue
-
-    return saved_files
-
-
-# Async version of batch generation
-async def generate_multiple_images_async(prompts: list[str], output_directory: str,
-                                         filename_prefix: str = "generated_img",
-                                         extension: str = "png", model: str = "gpt-image-1") -> list[str]:
-    """
-    Async version of generate_multiple_images using concurrent execution.
-
-    Args:
-        Same as generate_multiple_images
-
-    Returns:
-        list[str]: List of file paths for successfully generated images
-    """
-    print(f"🎨 Visual Model: Starting async batch generation of {len(prompts)} images...")
-
-    # Create tasks for concurrent execution
-    tasks = []
-    for i, prompt in enumerate(prompts):
-        filename_base = f"{filename_prefix}_{i + 1}"
-        task = generate_and_save_image_async(
-            prompt, output_directory, filename_base, extension, model
         )
-        tasks.append(task)
 
-    # Execute all tasks concurrently and collect results
-    results = await asyncio.gather(*tasks, return_exceptions=True)
+        if not response.generated_images:
+            raise Exception("Google Imagen API did not return any images.")
 
-    # Filter out exceptions and return successful file paths
-    saved_files = []
-    for i, result in enumerate(results):
-        if isinstance(result, Exception):
-            print(f"🚨 Failed to generate image {i + 1}/{len(prompts)}: {result}")
-        else:
-            saved_files.append(result)
+        # Get the first generated image's data
+        generated_image_data = response.generated_images[0]
+        if not generated_image_data.image or not generated_image_data.image.image_bytes:
+            raise Exception("Google Imagen API returned an image object without image_bytes.")
 
-    print(f"🎨 Visual Model: Batch generation completed. {len(saved_files)}/{len(prompts)} images successful.")
-    return saved_files
+        image_bytes = generated_image_data.image.image_bytes
+        pil_image = Image.open(BytesIO(image_bytes))
+
+        # Create output directory if it doesn't exist
+        Path(output_directory).mkdir(parents=True, exist_ok=True)
+
+        # Construct the full file path
+        # Ensure file_extension does not start with a dot and is lowercase
+        clean_file_extension = file_extension.lstrip('.').lower()
+        if not clean_file_extension:  # Default to png if empty
+            clean_file_extension = "png"
+
+        file_path = Path(output_directory) / f"{filename_base}.{clean_file_extension}"
+
+        # Determine PIL format string (e.g., 'PNG', 'JPEG')
+        pil_format = clean_file_extension.upper()
+        if pil_format == 'JPG':
+            pil_format = 'JPEG'
+        # Add more format mappings if needed for other extensions like WEBP
+
+        pil_image.save(file_path, format=pil_format)
+        logger.info(f"🖼️ [Google Imagen] Image saved successfully to: {file_path}")
+        logger.info(f"🖼️ [Google Imagen] Image size: {len(image_bytes)} bytes")
+        return str(file_path)
+
+    except types.GoogleAPIError as e:  # Catch Google specific API errors
+        error_msg = f"Google Imagen API error for '{filename_base}' (model '{model_name}'): {e}"
+        logger.error(f"🚨 [Google Imagen] {error_msg}")
+        raise Exception(error_msg) from e  # Preserve original exception context
+    except Exception as e:
+        error_msg = f"Google Imagen generation or saving failed for '{filename_base}' (model '{model_name}'): {e}"
+        logger.error(f"🚨 [Google Imagen] {error_msg}")
+        raise Exception(error_msg) from e
 
 
-# Test function for standalone usage
+# Test function for standalone usage of this module (optional)
 if __name__ == "__main__":
-    print("🚀 Testing Visual Model Integration...")
 
-    # Test single image generation
-    test_prompt = "A futuristic cityscape at sunset with flying cars, photorealistic"
-    test_output_dir = "test_generated_images"
-    test_filename = "test_image"
+    print("Hello from Main")
+
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger.info("🚀 Testing Google Imagen Visual Model Integration...")
+
+    # IMPORTANT: Ensure your .env file with GEMINI_API_KEY is in the correct location
+    # or GEMINI_API_KEY is set as an environment variable.
+    # Example .env content:
+    # GEMINI_API_KEY="YOUR_API_KEY_HERE"
+
+    test_prompt = "A charming robot tending a small, vibrant flower garden on a sunny day, digital art style."
+    test_output_dir = "test_generated_images_google"
+    test_filename = "test_google_image"
 
     try:
-        result_path = generate_and_save_image(
-            test_prompt,
-            test_output_dir,
-            test_filename
+        print("Init Generate Image")
+        result_path = generate_and_save_image_google(
+            prompt=test_prompt,
+            output_directory=test_output_dir,
+            filename_base=test_filename,
+            file_extension="png",
+            model_name="imagen-3.0-generate-002"
         )
-        print(f"✅ Test successful! Image saved to: {result_path}")
+        logger.info(f"✅ Google Imagen Test successful! Image saved to: {result_path}")
+    except ValueError as ve:
+        logger.error(f"❌ Configuration Error: {ve}. Please ensure GEMINI_API_KEY is set correctly.")
     except Exception as e:
-        print(f"❌ Test failed: {e}")
+        logger.error(f"❌ Google Imagen Test failed: {e}")
 
-    print("\n🏁 Visual Model Test Finished.")
+    logger.info("\n🏁 Google Imagen Visual Model Test Finished.")
