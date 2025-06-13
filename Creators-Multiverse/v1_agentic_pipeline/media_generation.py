@@ -14,8 +14,10 @@ async def generate_visual_asset_for_platform(
         output_directory: str,  # e.g., "generated_posts/facebook"
         filename_base: str,  # e.g., "hello_world_intro_post"
         media_type: Literal["image"] = "image",  # Extend for "video" later
-        model: str = "gpt-image-1",  # OpenAI model to use - #da-le3 feeling bit too anime/ai
+        model: str = "gpt-image-1",  # OpenAI model to use - # da-le3 feeling bit too anime/ai
         # Yet GPT-Image-1 Extraordinarily more slow than da-le3 - 15-20x slow - but in this kind of product - waiting time is our Friend.
+        # And GPT-Image-1 - quickly becomes very expensive - averaging at 0.15$ per photo - (image quality high)
+        # Must try google As well - Imagen 4
         file_extension: str = IMAGE_FILE_EXTENSION
 ) -> str:
     """
